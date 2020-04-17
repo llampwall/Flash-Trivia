@@ -9,6 +9,7 @@ function App() {
 
   const categoryEl = useRef()
   const amountEl = useRef()
+  const difficultyEl = useRef()
 
   useEffect(() => {
     axios.get('https://opentdb.com/api_category.php')
@@ -26,12 +27,16 @@ function App() {
   }
 
   function handleSubmit(e) {
+    let p = {
+      amount: amountEl.current.value,
+      category: categoryEl.current.value
+    }
+    if (difficultyEl.current.value !== 'all') {
+      p = {...p, difficulty: difficultyEl.current.value}
+    }
     e.preventDefault()
     axios.get('https://opentdb.com/api.php', {
-      params: {
-        amount: amountEl.current.value,
-        category: categoryEl.current.value
-      }
+      params: p
     })
     .then(res => {
       setFlashcards(res.data.results.map((item, index) => {
@@ -64,6 +69,15 @@ function App() {
         <div className="form-group">
           <label htmlFor="amount">Number of questions</label>
           <input type="number" id="amount" min="1" step="1" defaultValue={10} ref={amountEl} />
+        </div>
+        <div className="form-group">
+          <label htmlFor="difficulty">Difficulty</label>
+          <select id="difficulty" defaultValue="All" ref={difficultyEl}>
+            <option>all</option>
+            <option>easy</option>
+            <option>medium</option>
+            <option>hard</option>
+          </select>
         </div>
         <div className="form-group">
           <button className="btn">Generate</button>
